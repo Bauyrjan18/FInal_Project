@@ -1,16 +1,14 @@
-[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
-eclipse.project.name = appName + '-core'
+// core/build.gradle
+apply plugin: "java-library"
 
-dependencies {
-  api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
-  api "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-  api "com.badlogicgames.gdx:gdx:$gdxVersion"
-
-  if(enableGraalNative == 'true') {
-    implementation "io.github.berstanio:gdx-svmhelper-annotations:$graalHelperVersion"
-  }
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }
 
-jar {
-  duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+sourceSets.main.java.srcDirs = ["src/"]
+
+dependencies {
+    // LibGDX core
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
 }
