@@ -1,0 +1,48 @@
+// desktop/build.gradle
+apply plugin: "java-library"
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+sourceSets.main.java.srcDirs = ["src/"]
+
+// Папка assets доступна при запуске через run
+sourceSets.main.resources.srcDirs = ["../assets"]
+
+dependencies {
+    implementation project(":core")
+    api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+}
+
+// Задача запуска через: ./gradlew desktop:run
+task run(type: JavaExec, dependsOn: classes) {
+    mainClass = "com.silksong.desktop.DesktopLauncher"
+    classpath = sourceSets.main.runtimeClasspath
+    standardInput = System.in
+    workingDir = rootProject.file("assets/")
+    ignoreExitValue = true
+
+    if (System.properties['os.name'].toLowerCase().contains('mac')) {
+        jvmArgs "-XstartOnFirstThread"
+    }
+}
+
+// Fat JAR со всеми зависимостями
+jar {
+    archiveFileName.set("${appName}-desktop-${version}.jar")
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+
+    manifest {
+        attributes 'Main-Class': 'com.silksong.desktop.DesktopLauncher'
+    }
+
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+    from(sourceSets.main.output)
+    from(rootProject.file("assets/"))
+}
