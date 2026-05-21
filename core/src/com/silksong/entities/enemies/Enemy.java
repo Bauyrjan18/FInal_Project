@@ -1,4 +1,6 @@
 package com.silksong.entities.enemies;
+import com.silksong.utils.GameSettings;
+import com.silksong.utils.Difficulty;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,12 +28,17 @@ public abstract class Enemy {
     protected int expReward;
 
     public Enemy(float x, float y, float w, float h, float health, float damage, float speed, int expReward) {
+        // Apply difficulty multipliers
+        Difficulty diff = GameSettings.getInstance().getDifficulty();
+        float hpMult  = diff.enemyHealthMult;
+        float dmgMult = diff.enemyDamageMult;
+
         this.position      = new Vector2(x, y);
         this.velocity      = new Vector2(0, 0);
         this.bounds        = new Rectangle(x, y, w, h);
-        this.maxHealth     = health;
-        this.currentHealth = health;
-        this.damage        = damage;
+        this.maxHealth     = health * hpMult;
+        this.currentHealth = health * hpMult;
+        this.damage        = damage * dmgMult;
         this.speed         = speed;
         this.width         = w;
         this.height        = h;
